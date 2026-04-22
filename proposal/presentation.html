@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Alumni Networking – Nhóm B6</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #e2e8f0; overflow: hidden; }
+
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    display: none; width: 100%; height: 100%;
+    padding: 48px 64px; flex-direction: column; justify-content: center;
+    position: absolute; top: 0; left: 0;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+    animation: fadeIn 0.4s ease;
+  }
+  .slide.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* NAV */
+  .nav {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 12px; align-items: center; z-index: 100;
+    background: rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+    padding: 10px 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);
+  }
+  .nav button {
+    background: rgba(99,102,241,0.3); border: 1px solid rgba(99,102,241,0.5);
+    color: #e2e8f0; padding: 8px 20px; border-radius: 24px; cursor: pointer;
+    font-size: 14px; transition: all 0.2s;
+  }
+  .nav button:hover { background: rgba(99,102,241,0.6); }
+  .nav .counter { font-size: 13px; color: #94a3b8; min-width: 60px; text-align: center; }
+
+  /* DOTS */
+  .dots {
+    position: fixed; top: 24px; right: 32px; display: flex; gap: 8px; z-index: 100;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); cursor: pointer; transition: all 0.2s;
+  }
+  .dot.active { background: #6366f1; transform: scale(1.3); }
+
+  /* TYPOGRAPHY */
+  .badge {
+    display: inline-block; background: rgba(99,102,241,0.2);
+    border: 1px solid rgba(99,102,241,0.4); color: #a5b4fc;
+    padding: 4px 14px; border-radius: 20px; font-size: 12px;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;
+  }
+  h1 { font-size: 52px; font-weight: 700; line-height: 1.15; color: #fff; }
+  h2 { font-size: 36px; font-weight: 700; color: #fff; margin-bottom: 28px; }
+  h2 span { color: #6366f1; }
+  .subtitle { font-size: 18px; color: #94a3b8; margin-top: 12px; }
+  .accent { color: #6366f1; }
+  .highlight { color: #34d399; font-weight: 600; }
+
+  /* CARDS */
+  .cards { display: grid; gap: 16px; }
+  .cards.col2 { grid-template-columns: 1fr 1fr; }
+  .cards.col3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 20px 24px;
+  }
+  .card .card-title { font-size: 13px; color: #6366f1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .card p { font-size: 15px; color: #cbd5e1; line-height: 1.6; }
+  .card .big { font-size: 32px; font-weight: 700; color: #fff; }
+  .card .unit { font-size: 14px; color: #94a3b8; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: rgba(99,102,241,0.15); color: #a5b4fc; padding: 10px 14px; text-align: left; font-weight: 600; }
+  td { padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  .td-green { color: #34d399; font-weight: 600; }
+  .td-yellow { color: #fbbf24; font-weight: 600; }
+  .td-red { color: #f87171; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 16px 20px; font-family: 'Courier New', monospace;
+    font-size: 13px; color: #a5b4fc; line-height: 1.8;
+  }
+
+  /* FLOW */
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .flow-step {
+    background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 8px; padding: 8px 16px; font-size: 14px; color: #a5b4fc;
+  }
+  .flow-arrow { color: #6366f1; font-size: 18px; }
+
+  /* PILL */
+  .pill {
+    display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  }
+  .pill-green { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .pill-yellow { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+  .pill-blue { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3); }
+
+  /* SLIDE SPECIFIC */
+  .slide-number {
+    position: absolute; top: 24px; left: 64px;
+    font-size: 12px; color: #475569; letter-spacing: 2px; text-transform: uppercase;
+  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  ul { list-style: none; }
+  ul li { padding: 6px 0; color: #cbd5e1; font-size: 15px; }
+  ul li::before { content: "→ "; color: #6366f1; font-weight: 700; }
+  .tag { font-size: 11px; color: #475569; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- SLIDE 1 -->
+<div class="slide active" id="s1">
+  <div class="slide-number">01 / 07</div>
+  <div class="badge">Nhóm B6 · AICB Phase 1 · Ngày tổng kết</div>
+  <h1>AI Alumni<br><span class="accent">Networking</span></h1>
+  <p class="subtitle">Enterprise Readiness Review — <strong style="color:#a5b4fc">US-06: LLM Icebreaker (RAG-based)</strong></p>
+  <div style="margin-top:40px" class="cards col3">
+    <div class="card">
+      <div class="card-title">Feature</div>
+      <p>Sinh 3 câu mở đầu cá nhân hóa dựa trên profile 2 người + event context</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Pipeline</div>
+      <div class="flow" style="margin-top:4px">
+        <span class="flow-step">retrieve</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">grade</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">generate</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">validate</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">SLA</div>
+      <div class="big">≤5s</div>
+      <div class="unit">latency tại event</div>
+    </div>
+  </div>
+  <div style="margin-top:24px" class="cards col2">
+    <div class="card">
+      <div class="card-title">👤 User 1 — Fresh Graduate (18–22)</div>
+      <p>Biết <em>ai</em> nên gặp nhưng không biết <em>nói gì</em> — ngại bắt chuyện dù đã có gợi ý</p>
+    </div>
+    <div class="card">
+      <div class="card-title">👤 User 2 — Mid-level Professional (22+)</div>
+      <p>Muốn networking chất lượng, cần câu mở đầu có chiều sâu, tiết kiệm thời gian</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide" id="s2">
+  <div class="slide-number">02 / 07</div>
+  <h2>Bối cảnh <span>Enterprise</span> & Ràng buộc</h2>
+  <p style="color:#94a3b8;margin-bottom:24px;font-size:15px">Khách hàng: Trường đại học / tổ chức alumni · Event 200–1.000 người · 1–4 lần/năm</p>
+  <div class="cards" style="gap:14px">
+    <div class="card" style="border-left:3px solid #f87171;display:flex;gap:20px;align-items:center">
+      <div style="font-size:28px">🔒</div>
+      <div>
+        <div class="card-title" style="color:#f87171">Ràng buộc 1 — PDPA Việt Nam</div>
+        <p>Dữ liệu cá nhân không được chuyển ra nước ngoài nếu không có consent rõ ràng</p>
+        <p style="margin-top:6px;color:#fbbf24;font-size:13px">→ Phải anonymize profile (tên → ID) trước khi gửi GPT-4o · Ký DPA với OpenAI</p>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid #fbbf24;display:flex;gap:20px;align-items:center">
+      <div style="font-size:28px">⚡</div>
+      <div>
+        <div class="card-title" style="color:#fbbf24">Ràng buộc 2 — Latency SLA ≤5s tại event</div>
+        <p>Wifi hội trường đông người, mạng không ổn định — LLM call timeout = UX hỏng ngay lúc quan trọng nhất</p>
+        <p style="margin-top:6px;color:#fbbf24;font-size:13px">→ Pipeline 4 nodes phải xong trong 5s · Cần streaming response</p>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid #6366f1;display:flex;gap:20px;align-items:center">
+      <div style="font-size:28px">📈</div>
+      <div>
+        <div class="card-title" style="color:#a5b4fc">Ràng buộc 3 — Traffic Spike theo Event Schedule</div>
+        <p>90% traffic dồn vào 2–3h cao điểm, gần như 0 còn lại — hạ tầng phải scale nhanh và không tốn tiền khi idle</p>
+        <p style="margin-top:6px;color:#fbbf24;font-size:13px">→ AWS ECS Fargate scale-to-zero · Không dùng On-prem (utilization ~5%)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide" id="s3">
+  <div class="slide-number">03 / 07</div>
+  <h2>Kiến trúc <span>Triển khai</span> Đề xuất</h2>
+  <div class="two-col" style="margin-top:8px">
+    <div>
+      <div class="code-block">
+[Mobile App]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
+[AWS ECS Fargate — Icebreaker Service]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── Redis Cache<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;(semantic cache theo cặp user)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── LangGraph Pipeline<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;retrieve → grade → generate → validate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── pgvector (profile embeddings)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── OpenAI GPT-4o API<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(profile đã anonymized)
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;border-left:3px solid #34d399">
+        <div class="card-title" style="color:#34d399">✅ Lý do chọn Cloud (AWS)</div>
+        <ul style="margin-top:8px">
+          <li>Scale-to-zero khi không có event → không tốn GPU idle</li>
+          <li>GPT-4o chất lượng vượt trội so với self-hosted cùng size</li>
+          <li>Self-hosted chỉ có lợi khi &gt;1M tokens/ngày</li>
+        </ul>
+      </div>
+      <div class="card" style="border-left:3px solid #fbbf24">
+        <div class="card-title" style="color:#fbbf24">⚠️ Trade-off chấp nhận</div>
+        <ul style="margin-top:8px">
+          <li>Anonymize profile trước khi gửi + ký DPA với OpenAI</li>
+          <li>Phụ thuộc uptime OpenAI → cần circuit breaker + fallback</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide" id="s4">
+  <div class="slide-number">04 / 07</div>
+  <h2>Cost <span>Anatomy</span></h2>
+  <div class="two-col" style="margin-top:8px;align-items:start">
+    <div>
+      <p style="color:#94a3b8;font-size:13px;margin-bottom:12px">GPT-4o 2025: input $2.50/1M · output $10/1M</p>
+      <table>
+        <tr><th>Lớp cost</th><th>MVP/event</th><th>Growth/event</th></tr>
+        <tr><td>API Tokens (77%)</td><td>~$2.55</td><td>~$24.5</td></tr>
+        <tr><td>AWS ECS Fargate</td><td>~$0.05</td><td>~$0.15</td></tr>
+        <tr><td>RDS + ElastiCache</td><td>~$0.50</td><td>~$1</td></tr>
+        <tr><td>CloudWatch + LangSmith</td><td>~$0.20</td><td>~$1</td></tr>
+        <tr><td><strong>Tổng trực tiếp</strong></td><td><strong>~$3.30</strong></td><td><strong>~$26.65</strong></td></tr>
+        <tr><td>Hidden costs (×1.5)</td><td class="td-yellow">~$1.65</td><td class="td-yellow">~$13.35</td></tr>
+        <tr><td><strong>Tổng thực tế</strong></td><td class="td-green">~$5</td><td class="td-green">~$40</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cards" style="gap:12px">
+        <div class="card" style="text-align:center">
+          <div class="card-title">Traffic MVP</div>
+          <div class="big">~600</div>
+          <div class="unit">LLM calls · 200 người · 2h</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="card-title">Traffic Growth</div>
+          <div class="big">~5.760</div>
+          <div class="unit">LLM calls · 1.000 người · 2h</div>
+        </div>
+        <div class="card" style="border-left:3px solid #f87171">
+          <div class="card-title" style="color:#f87171">Hidden costs hay bị quên</div>
+          <ul style="margin-top:6px">
+            <li style="font-size:13px">Validate node (LLM call nhỏ)</li>
+            <li style="font-size:13px">Retry overhead khi rate limit</li>
+            <li style="font-size:13px">RAG grading node (+200 tokens)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide" id="s5">
+  <div class="slide-number">05 / 07</div>
+  <h2>Cost <span>Optimization</span></h2>
+  <div class="cards" style="gap:14px;margin-top:8px">
+    <div class="card" style="border-left:3px solid #34d399">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="color:#34d399">1. Semantic Caching</div>
+        <span class="pill pill-green">LÀM NGAY</span>
+      </div>
+      <div class="two-col" style="gap:16px">
+        <div>
+          <p style="font-size:14px">Cache icebreaker theo <code style="color:#a5b4fc">(user_A, user_B, event_id)</code> trong Redis · TTL = duration event</p>
+        </div>
+        <div style="display:flex;gap:16px">
+          <div style="text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#34d399">30–40%</div>
+            <div style="font-size:11px;color:#94a3b8">tiết kiệm cost</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#34d399">&lt;50ms</div>
+            <div style="font-size:11px;color:#94a3b8">cache hit latency</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid #34d399">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="color:#34d399">2. Prompt Compression</div>
+        <span class="pill pill-green">LÀM NGAY</span>
+      </div>
+      <div class="two-col" style="gap:16px">
+        <div>
+          <p style="font-size:14px">Chỉ lấy top-3 fields thay vì full profile · Truncate RAG chunks xuống 150 tokens</p>
+          <p style="font-size:13px;color:#94a3b8;margin-top:6px">1.100 → ~460 input tokens/call</p>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:22px;font-weight:700;color:#34d399">~58%</div>
+          <div style="font-size:11px;color:#94a3b8">giảm input tokens</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid #6366f1">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title">3. Model Routing</div>
+        <span class="pill pill-blue">GROWTH PHASE</span>
+      </div>
+      <p style="font-size:14px">Simple pair → GPT-4o-mini (~17x rẻ hơn) · Complex pair → GPT-4o · 60% traffic dùng cheap model</p>
+    </div>
+  </div>
+  <div style="margin-top:20px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:12px;padding:16px 24px;text-align:center">
+    <span style="color:#94a3b8;font-size:14px">Kết hợp Caching + Compression ngay từ MVP: </span>
+    <span style="color:#f87171;font-size:18px;font-weight:700;text-decoration:line-through">~$5</span>
+    <span style="color:#94a3b8;font-size:18px"> → </span>
+    <span style="color:#34d399;font-size:22px;font-weight:700">~$2–3/event</span>
+    <span style="color:#94a3b8;font-size:14px"> mà không ảnh hưởng đáng kể đến chất lượng</span>
+  </div>
+</div>
+
+<!-- SLIDE 6 -->
+<div class="slide" id="s6">
+  <div class="slide-number">06 / 07</div>
+  <h2>Reliability <span>&</span> Scaling</h2>
+  <table style="margin-bottom:16px">
+    <tr>
+      <th>Tình huống</th><th>Tác động</th><th>Ngắn hạn</th><th>Dài hạn</th>
+    </tr>
+    <tr>
+      <td>🚀 Traffic spike check-in</td>
+      <td class="td-red">Latency &gt;5s, 429 rate limit</td>
+      <td>Retry backoff · trả cache</td>
+      <td>Request queue (Bull) · pre-generate</td>
+    </tr>
+    <tr>
+      <td>💀 OpenAI API down</td>
+      <td class="td-red">Icebreaker không hoạt động</td>
+      <td>Circuit breaker → Gemini Flash</td>
+      <td>Multi-provider · half-open 60s</td>
+    </tr>
+    <tr>
+      <td>🐢 Response &gt;4.5s</td>
+      <td class="td-yellow">User bỏ qua tính năng</td>
+      <td>Streaming · timeout partial</td>
+      <td>Bỏ grade_docs_node ở MVP</td>
+    </tr>
+  </table>
+  <div class="two-col" style="gap:20px">
+    <div class="card">
+      <div class="card-title">Fallback 3 tầng</div>
+      <div class="flow" style="margin-top:10px;flex-direction:column;align-items:flex-start;gap:6px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="flow-step" style="background:rgba(52,211,153,0.15);border-color:rgba(52,211,153,0.3);color:#34d399">GPT-4o (100%)</span>
+          <span style="color:#94a3b8;font-size:13px">primary</span>
+        </div>
+        <div style="color:#475569;padding-left:8px">↓ down</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="flow-step" style="background:rgba(251,191,36,0.15);border-color:rgba(251,191,36,0.3);color:#fbbf24">Gemini Flash (~85%)</span>
+          <span style="color:#94a3b8;font-size:13px">fallback</span>
+        </div>
+        <div style="color:#475569;padding-left:8px">↓ down</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="flow-step" style="background:rgba(248,113,113,0.15);border-color:rgba(248,113,113,0.3);color:#f87171">Template-based (~50%)</span>
+          <span style="color:#94a3b8;font-size:13px">last resort</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Metrics cần monitor</div>
+      <table style="margin-top:8px;font-size:13px">
+        <tr><td style="color:#cbd5e1">Latency p95</td><td class="td-red">&gt; 4s → alert</td></tr>
+        <tr><td style="color:#cbd5e1">OpenAI error rate</td><td class="td-red">&gt; 5% / phút</td></tr>
+        <tr><td style="color:#cbd5e1">Cache hit rate</td><td class="td-yellow">&lt; 20% → bất thường</td></tr>
+        <tr><td style="color:#cbd5e1">Regenerate rate</td><td class="td-yellow">&gt; 40% → chất lượng kém</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7 -->
+<div class="slide" id="s7">
+  <div class="slide-number">07 / 07</div>
+  <h2>Track Đề xuất <span>&</span> Bước Tiếp Theo</h2>
+  <div class="three-col" style="margin-top:8px">
+    <div class="card" style="border-top:3px solid #f59e0b">
+      <div class="card-title" style="color:#f59e0b">Track 1 — Business & Product</div>
+      <div style="font-size:20px;font-weight:700;color:#fff;margin:8px 0">Hoàng Văn Bắc</div>
+      <p style="font-size:13px">Cost model · Go-to-market · AI governance & compliance</p>
+    </div>
+    <div class="card" style="border-top:3px solid #06b6d4">
+      <div class="card-title" style="color:#06b6d4">Track 2 — Infrastructure & Data</div>
+      <div style="font-size:20px;font-weight:700;color:#fff;margin:8px 0">Trần Anh Tú</div>
+      <p style="font-size:13px">CI/CD pipeline · LLMOps · Monitoring dashboard production-grade</p>
+    </div>
+    <div class="card" style="border-top:3px solid #6366f1">
+      <div class="card-title" style="color:#a5b4fc">Track 3 — AI Application</div>
+      <div style="font-size:16px;font-weight:700;color:#fff;margin:8px 0">5 thành viên còn lại</div>
+      <p style="font-size:13px">Advanced agent · Memory · Fine-tuning · RAGAS eval pipeline</p>
+    </div>
+  </div>
+  <div class="cards col2" style="margin-top:16px">
+    <div class="card">
+      <div class="card-title">3 kỹ năng cần bù</div>
+      <ul style="margin-top:8px">
+        <li style="font-size:14px">LLMOps / CI-CD — hiện deploy thủ công</li>
+        <li style="font-size:14px">Production Eval (RAGAS) — chưa có benchmark</li>
+        <li style="font-size:14px">Cost governance & AI Act compliance</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Roadmap Phase 2</div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="pill pill-green">Tuần 1</span>
+          <span style="font-size:14px;color:#cbd5e1">Semantic caching + prompt compression → đo cost thực tế</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="pill pill-yellow">Tuần 2</span>
+          <span style="font-size:14px;color:#cbd5e1">Eval pipeline RAGAS · benchmark chất lượng icebreaker</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="pill pill-blue">Tuần 3</span>
+          <span style="font-size:14px;color:#cbd5e1">CI/CD pipeline + production monitoring dashboard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end deck -->
+
+<!-- DOTS -->
+<div class="dots" id="dots"></div>
+
+<!-- NAV -->
+<div class="nav">
+  <button onclick="prev()">← Prev</button>
+  <span class="counter" id="counter">1 / 7</span>
+  <button onclick="next()">Next →</button>
+</div>
+
+<script>
+  const total = 7;
+  let cur = 1;
+
+  const dots = document.getElementById('dots');
+  for (let i = 1; i <= total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => go(i);
+    dots.appendChild(d);
+  }
+
+  function go(n) {
+    document.getElementById('s' + cur).classList.remove('active');
+    document.querySelectorAll('.dot')[cur - 1].classList.remove('active');
+    cur = Math.max(1, Math.min(total, n));
+    document.getElementById('s' + cur).classList.add('active');
+    document.querySelectorAll('.dot')[cur - 1].classList.add('active');
+    document.getElementById('counter').textContent = cur + ' / ' + total;
+  }
+
+  function next() { go(cur + 1); }
+  function prev() { go(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev();
+  });
+</script>
+</body>
+</html>
