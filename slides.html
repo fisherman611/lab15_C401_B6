@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniAssist AI Enterprise Proposal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: #f3f4f6;
+      --surface: #ffffff;
+      --text-main: #0e1318;
+      --text-muted: #5e6d7a;
+      --accent-blue: #00c4cc;
+      --canva-purple: #7d2ae8;
+
+      --blue-soft: #f0f7ff;
+      --green-soft: #eafaf1;
+      --orange-soft: #fff9e6;
+      --red-soft: #fff5f5;
+      --purple-soft: #f3f0ff;
+
+      --border: rgba(0, 0, 0, 0.08);
+      --shadow-canva: 0px 8px 16px rgba(14, 19, 24, 0.07);
+      --radius-canva: 12px;
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--bg-gradient);
+      color: var(--text-main);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .deck {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      display: none;
+      height: calc(100vh - 40px);
+      width: calc(100vw - 40px);
+      max-width: 1600px;
+      max-height: 900px;
+      position: absolute;
+      opacity: 0;
+      transform: scale(0.98);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .frame {
+      flex: 1;
+      background: var(--surface);
+      border-radius: var(--radius-canva);
+      box-shadow: var(--shadow-canva);
+      padding: 40px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 15px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--canva-purple);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--canva-purple);
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-size: clamp(36px, 4vw, 54px);
+      line-height: 1.1;
+      margin: 0;
+      font-weight: 800;
+      color: #0e1318;
+    }
+
+    h2 {
+      font-size: clamp(28px, 3vw, 36px);
+      line-height: 1.2;
+      margin: 0;
+      font-weight: 700;
+      color: #0e1318;
+      border-left: 5px solid var(--canva-purple);
+      padding-left: 15px;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin: 0 0 10px 0;
+      font-weight: 700;
+      color: #0e1318;
+    }
+
+    .lead {
+      font-size: 20px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-canva);
+      padding: 20px 25px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .card.soft-blue {
+      background: var(--blue-soft);
+      border: none;
+    }
+
+    .card.soft-green {
+      background: var(--green-soft);
+      border: none;
+    }
+
+    .card.soft-orange {
+      background: var(--orange-soft);
+      border: none;
+    }
+
+    .card.soft-red {
+      background: var(--red-soft);
+      border: none;
+    }
+
+    .card.soft-purple {
+      background: var(--purple-soft);
+      border: none;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: white;
+      background: var(--canva-purple);
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+
+    ul {
+      margin: 10px 0 0 20px;
+      padding: 0;
+    }
+
+    li {
+      margin: 8px 0;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    th {
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #f8fafc;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+
+    .highlight {
+      color: var(--canva-purple);
+      font-weight: 700;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .pill {
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .step {
+      padding: 15px 20px;
+      border-radius: var(--radius-canva);
+      background: #fdfdfd;
+      border: 1px solid #f1f1f1;
+    }
+
+    /* Canva Style Controls */
+    .canva-controls {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(14, 19, 24, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 6px 16px;
+      border-radius: 10px;
+      color: white;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none; /* Clicking through when hidden */
+    }
+
+    .canva-controls.visible,
+    .canva-controls:hover {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    .canva-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: var(--transition-smooth);
+    }
+
+    .canva-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .canva-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .canva-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .slide-counter {
+      font-size: 14px;
+      font-weight: 500;
+      padding: 0 15px;
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .side-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+    }
+
+    .side-nav.visible,
+    .side-nav:hover {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .side-nav.left { left: 20px; }
+    .side-nav.right { right: 20px; }
+
+    .side-arrow {
+      width: 50px;
+      height: 50px;
+      background: rgba(14, 19, 24, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .side-nav:hover .side-arrow {
+      background: var(--canva-purple);
+      transform: scale(1.1);
+    }
+
+    .formula {
+      font-family: 'Courier New', Courier, monospace;
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 8px;
+      display: inline-block;
+      border: 1px dashed #cbd5e1;
+      font-size: 18px;
+      color: var(--canva-purple);
+      font-weight: 700;
+    }
+
+    .arch-box {
+      font-size: 13px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="deck">
+    <!-- Slide 1: Hero -->
+    <section class="slide active">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>Applied AI & System Engineering</div>
+        </div>
+        <div class="content-area" style="justify-content: center;">
+          <div class="badge">Enterprise Solution</div>
+          <h1>UniAssist AI:<br>Intelligent Orchestrator for Higher Education</h1>
+          <p class="lead" style="margin-top:20px;">Một hệ thống LLM-powered intelligent assistant được thiết kế để
+            giải quyết bài toán quy mô, hiệu năng và bảo mật trong môi trường giáo dục đại học.</p>
+          <div class="pill-row">
+            <div class="pill">Knowledge-aware RAG</div>
+            <div class="pill">Reasoning-based Support</div>
+            <div class="pill">Workflow Automation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: Problem Statement -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>1. Project Overview</div>
+        </div>
+        <div class="content-area">
+          <h2>1.1 Problem Statement</h2>
+          <div class="grid-2">
+            <div class="card soft-red">
+              <h3>Bối cảnh Tuyển sinh</h3>
+              <ul>
+                <li>Lượng lớn câu hỏi lặp lại (FAQ) gây quá tải.</li>
+                <li>Truy vấn phức tạp (điều kiện xét tuyển, tổ hợp ngành).</li>
+                <li>Hỗ trợ 24/7 cho sinh viên mới là điều bắt buộc.</li>
+              </ul>
+            </div>
+            <div class="card soft-orange">
+              <h3>Vấn đề hiện hữu</h3>
+              <ul>
+                <li><strong>Scale:</strong> Con người không thể đáp ứng trong mùa cao điểm.</li>
+                <li><strong>Phân mảnh:</strong> Thông tin rải rác ở PDF, Web, Forms.</li>
+                <li><strong>Consistency:</strong> Khó đảm bảo tính nhất quán của câu trả lời.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Proposed Solution -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>1. Project Overview</div>
+        </div>
+        <div class="content-area">
+          <h2>1.2 Proposed Solution</h2>
+          <div class="grid-3">
+            <div class="card">
+              <div class="badge">01</div>
+              <h3>Knowledge-aware QA</h3>
+              <p style="font-size: 14px;">Xây dựng RAG pipeline để truy xuất tài liệu liên quan, sinh câu trả lời
+                grounded (không hallucinate).</p>
+            </div>
+            <div class="card">
+              <div class="badge">02</div>
+              <h3>Reasoning Support</h3>
+              <p style="font-size: 14px;">Xử lý câu hỏi multi-hop: "Em có đủ điều kiện ngành X nếu điểm em như thế này
+                không?"</p>
+            </div>
+            <div class="card">
+              <div class="badge">03</div>
+              <h3>Workflow Assistant</h3>
+              <p style="font-size: 14px;">Hướng dẫn step-by-step: Nộp hồ sơ, đăng ký môn học, xử lý giấy tờ hành chính.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: Conceptual Architecture -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>1. Project Overview</div>
+        </div>
+        <div class="content-area">
+          <h2>1.3 System Architecture (Conceptual)</h2>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px;">
+            <div class="arch-box" style="width: 250px; background: #fff;">User Query</div>
+            <div style="opacity: 0.5;">↓</div>
+            <div class="arch-box" style="width: 250px; background: var(--blue-soft);">API Gateway</div>
+            <div style="opacity: 0.5;">↓</div>
+            <div class="arch-box" style="width: 350px; background: var(--purple-soft); font-weight: bold;">Orchestrator
+              (Routing + Logic)</div>
+            <div style="opacity: 0.5;">↓</div>
+            <div style="display: flex; gap: 30px;">
+              <div class="arch-box" style="width: 180px;">Retriever Layer<br>(BM25 + Dense)</div>
+              <div class="arch-box" style="width: 180px; border-color: var(--canva-purple);">LLM Layer<br>(Cloud
+                Inference)</div>
+            </div>
+            <div style="opacity: 0.5;">↓</div>
+            <div class="arch-box" style="width: 250px; background: var(--green-soft);">Post-processing & Safety</div>
+            <div style="opacity: 0.5;">↓</div>
+            <div class="arch-box" style="width: 250px; background: #fff;">Response</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: Traffic & Data -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>2. Enterprise Context</div>
+        </div>
+        <div class="content-area">
+          <h2>2.1 Traffic & 2.2 Data Characteristics</h2>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Traffic Pattern</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Period</th>
+                    <th>Estimated Load</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Bình thường</td>
+                    <td>1k – 5k req/day</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mùa tuyển sinh</strong></td>
+                    <td><strong>50k – 100k req/day</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style="font-size: 13px; margin-top: 10px;">👉 <strong>Highly bursty system:</strong> Yêu cầu hạ tầng có
+                khả năng scale-out tức thì.</p>
+            </div>
+            <div class="card">
+              <h3>Dữ liệu đầu vào</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Data type</th>
+                    <th>Challenge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>FAQ (Structured)</td>
+                    <td>Dễ cache, cần sync</td>
+                  </tr>
+                  <tr>
+                    <td>Quy định (PDF)</td>
+                    <td>Cần chunk + embedding</td>
+                  </tr>
+                  <tr>
+                    <td>Biểu mẫu</td>
+                    <td>Cần mapping logic</td>
+                  </tr>
+                  <tr>
+                    <td>Hồ sơ (PII)</td>
+                    <td>Bảo mật nhạy cảm</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Risk Analysis -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>2. Enterprise Context</div>
+        </div>
+        <div class="content-area">
+          <h2>2.3 Risk Analysis</h2>
+          <div class="grid-3">
+            <div class="card soft-red">
+              <h3 style="color: #dc2626;">❗ Hallucination</h3>
+              <p style="font-size: 14px;">Sai lệch thông tin tuyển sinh gây hậu quả nghiêm trọng về pháp lý và uy tín.
+              </p>
+            </div>
+            <div class="card soft-orange">
+              <h3 style="color: #d97706;">❗ Outdated Knowledge</h3>
+              <p style="font-size: 14px;">Quy định học vụ thay đổi hàng năm, AI có thể trả lời theo dữ liệu cũ.</p>
+            </div>
+            <div class="card soft-red">
+              <h3 style="color: #dc2626;">❗ Data Leakage</h3>
+              <p style="font-size: 14px;">Vi phạm quyền riêng tư của sinh viên (PII) khi gửi dữ liệu lên Cloud.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Deployment -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>3. Deployment Choice</div>
+        </div>
+        <div class="content-area">
+          <h2>3.1 Hybrid chi tiết & 3.2 Logical Architecture</h2>
+          <div class="grid-2">
+            <div class="card soft-blue">
+              <h3>Cloud Layer</h3>
+              <ul>
+                <li>LLM Inference (Azure / OpenAI).</li>
+                <li>Vector Database (Pinecone / Qdrant).</li>
+                <li>API Server (FastAPI + Docker).</li>
+              </ul>
+            </div>
+            <div class="card soft-red">
+              <h3>On-prem Layer</h3>
+              <ul>
+                <li>User data (PII).</li>
+                <li>Internal Enterprise APIs.</li>
+                <li>Private Document Vault.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="margin-top: 10px;">
+            <h3>Logical Architecture</h3>
+            <p style="font-size: 14px;">Frontend → Gateway → <strong>Orchestrator</strong> (Retriever, LLM, Cache,
+              Log/Monitor).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: Routing Strategy -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>3. Deployment Choice</div>
+        </div>
+        <div class="content-area">
+          <h2>3.3 Routing Strategy: Phễu điều hướng</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Query Type</th>
+                <th>Handling Pipeline</th>
+                <th>Strategy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>FAQ đơn giản</strong></td>
+                <td>Cache / Rule-based</td>
+                <td>Không gọi LLM → $0 cost</td>
+              </tr>
+              <tr>
+                <td><strong>Yêu cầu trung bình</strong></td>
+                <td>RAG Standard</td>
+                <td>Dùng Small Models (Llama/Flash)</td>
+              </tr>
+              <tr>
+                <td><strong>Yêu cầu phức tạp</strong></td>
+                <td>RAG + Prompt Chaining</td>
+                <td>Reasoning với Large Models</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="margin-top: 15px; font-weight: bold; color: var(--canva-purple);">👉 Đây là nhân tố quan trọng nhất
+            để Tối ưu hóa chi phí (Cost Optimization).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: Cost Analysis -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>4. Cost Analysis</div>
+        </div>
+        <div class="content-area">
+          <h2>4.1 Formula & 4.2 Phase Breakdown</h2>
+          <div class="formula">
+            Cost = N<sub>query</sub> × (C<sub>retrieval</sub> + C<sub>LLM</sub>)
+          </div>
+          <p style="font-size: 14px; font-style: italic;">* Trong đó C<sub>LLM</sub> chiếm phần lớn tổng chi phí.</p>
+          <div class="grid-2" style="margin-top: 10px;">
+            <div class="card">
+              <div class="badge">MVP Phase (~$500)</div>
+              <p style="font-size: 13px;">Hệ thống đơn giản: 1 model, chưa routing, chưa cache.</p>
+            </div>
+            <div class="card">
+              <div class="badge">Growth Phase (~$4k)</div>
+              <p style="font-size: 13px;">Traffic cao (Peak), dùng Caching, Routing, Autoscaling.</p>
+            </div>
+          </div>
+          <div class="pill-row">
+            <div class="pill">Cost Driver 1: Token usage</div>
+            <div class="pill">Cost Driver 2: Query volume</div>
+            <div class="pill">Cost Driver 3: Model Size</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10: Optimization Level 1-3 -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>5. Optimization Plan</div>
+        </div>
+        <div class="content-area">
+          <h2>5.1 Multi-level Optimization (Part 1)</h2>
+          <div class="grid-3">
+            <div class="step">
+              <div class="badge" style="background: var(--blue-soft); color: var(--text-main);">LVL 1</div>
+              <h3>Caching</h3>
+              <p style="font-size: 13px;">Cache các câu hỏi FAQ phổ biến giúp giảm 40–60% số lượng gọi LLM đắt tiền.</p>
+            </div>
+            <div class="step">
+              <div class="badge" style="background: var(--purple-soft); color: var(--text-main);">LVL 2</div>
+              <h3>Model Routing</h3>
+              <p style="font-size: 13px;">Dùng máy học phân loại: Câu đơn giản dùng model nhỏ, câu khó mới dùng model
+                lớn.</p>
+            </div>
+            <div class="step">
+              <div class="badge" style="background: var(--green-soft); color: var(--text-main);">LVL 3</div>
+              <h3>Context Opt.</h3>
+              <p style="font-size: 13px;">Chunking thông minh, Top-k linh hoạt (k=3-5) và Prompt compression.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11: Optimization Level 4-5 -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>5. Optimization Plan</div>
+        </div>
+        <div class="content-area">
+          <h2>5.1 Multi-level Optimization (Part 2)</h2>
+          <div class="grid-2">
+            <div class="card">
+              <div class="badge">LVL 4: Retrieval Optimization</div>
+              <p>Hybrid Search (kết hợp Keyword BM25 + Dense Embedding vector) và Cross-encoder Reranking để đạt độ
+                chính xác tối đa.</p>
+            </div>
+            <div class="card">
+              <div class="badge">LVL 5: Data Pipeline</div>
+              <p>Tự động cập nhật kiến thức (Knowledge Auto-update), quản lý phiên bản (Version control) để chống
+                Outdated knowledge.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 12: Reliability HA & Queue -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>6. Reliability Plan</div>
+        </div>
+        <div class="content-area">
+          <h2>6.1 HA & 6.2 Queue System</h2>
+          <div class="grid-2">
+            <div class="card soft-purple">
+              <h3>High Availability</h3>
+              <ul>
+                <li>Auto-scaling trên Kubernetes clusters.</li>
+                <li>Load balancer phân phối tải đa điểm.</li>
+                <li>Multi-instance cho API layer.</li>
+              </ul>
+            </div>
+            <div class="card soft-blue">
+              <h3>Queue-based Processing</h3>
+              <p style="font-family: monospace; font-size: 16px; margin: 20px 0; font-weight: 700; color: var(--canva-purple);">User → Queue → Worker → LLM</p>
+              <p style="font-size: 14px;">Ngăn chặn việc overload hệ thống khi traffic spike đột biến
+                trong mùa tuyển sinh.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 13: Fallback & Monitoring -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>6. Reliability Plan</div>
+        </div>
+        <div class="content-area">
+          <h2>6.3 Fallback & 6.4 Monitoring</h2>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Fallback Strategy</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Failure</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>LLM Timeout</td>
+                    <td>Retry + Failover model</td>
+                  </tr>
+                  <tr>
+                    <td>Retrieval Fail</td>
+                    <td>Generic Safe Answer</td>
+                  </tr>
+                  <tr>
+                    <td>Overload</td>
+                    <td>Graceful Degradation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card">
+              <h3>Key Metrics (SLI/SLO)</h3>
+              <div class="pill-row">
+                <div class="pill">Latency (p95)</div>
+                <div class="pill">Error Rate</div>
+                <div class="pill">Cost per Query</div>
+                <div class="pill">Answer Quality</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 14: Roadmap -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>7. Track Recommendation & Roadmap</div>
+        </div>
+        <div class="content-area">
+          <h2>7.1 Recommended Track & 7.2 Roadmap</h2>
+          <p style="font-weight: 700; color: var(--canva-purple);">Track: LLM System Engineering / Applied AI</p>
+          <div style="display: flex; gap: 15px; margin-top: 10px;">
+            <div class="step" style="flex: 1;">
+              <div class="badge">Phase 1 (1.5m)</div>
+              <p style="font-size: 12px;">Build MVP, RAG pipeline, Base API.</p>
+            </div>
+            <div class="step" style="flex: 1;">
+              <div class="badge">Phase 2 (1m)</div>
+              <p style="font-size: 12px;">Optimization (Cache, Routing, Retrieval).</p>
+            </div>
+            <div class="step" style="flex: 1;">
+              <div class="badge">Phase 3 (1m)</div>
+              <p style="font-size: 12px;">Stability (Load test, Monitor, Safety).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 15: Evaluation & Extension -->
+    <section class="slide">
+      <div class="frame">
+        <div class="topbar">
+          <div class="kicker"><span class="dot"></span>7. Track Recommendation & Roadmap</div>
+        </div>
+        <div class="content-area">
+          <h2>7.3 Evaluation & 7.4 Future Extensions</h2>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Tiêu chí đánh giá</h3>
+              <p><strong>Offline:</strong> Correctness, Exact Match.</p>
+              <p><strong>Online:</strong> User satisfaction, Retention rate.</p>
+            </div>
+            <div class="card soft-purple">
+              <h3>Hướng phát triển 💡</h3>
+              <ul>
+                <li>Multi-agent pipeline (Validator agents).</li>
+                <li>Personalization (dựa trên hồ sơ User).</li>
+                <li>Voice interaction (Hỗ trợ Hotline AI).</li>
+              </ul>
+            </div>
+          </div>
+          <div style="margin-top: 20px; text-align: center; opacity: 0.7; font-weight: 700;">THANK YOU FOR YOUR
+            ATTENTION!</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Canva-style Side Nav -->
+  <div class="side-nav left" id="sidePrev">
+    <div class="side-arrow">‹</div>
+  </div>
+  <div class="side-nav right" id="sideNext">
+    <div class="side-arrow">›</div>
+  </div>
+
+  <!-- Canva-style Bottom Toolbar (Counter Only) -->
+  <div class="canva-controls">
+    <div class="slide-counter" id="progress" style="border:none;">1 / 15</div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const progress = document.getElementById('progress');
+    const sidePrev = document.getElementById('sidePrev');
+    const sideNext = document.getElementById('sideNext');
+    const controls = document.querySelector('.canva-controls');
+    const sideNavs = document.querySelectorAll('.side-nav');
+    let current = 0;
+    let autoHideTimer;
+
+    function showControls() {
+      controls.classList.add('visible');
+      sideNavs.forEach(nav => nav.classList.add('visible'));
+      clearTimeout(autoHideTimer);
+      autoHideTimer = setTimeout(() => {
+        controls.classList.remove('visible');
+        sideNavs.forEach(nav => nav.classList.remove('visible'));
+      }, 3000); 
+    }
+
+    document.addEventListener('mousemove', showControls);
+    document.addEventListener('click', showControls);
+
+    function renderSlide(index) {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      progress.textContent = `${index + 1} / ${slides.length}`;
+      
+      sidePrev.style.visibility = index === 0 ? 'hidden' : 'visible';
+      sideNext.style.visibility = index === slides.length - 1 ? 'hidden' : 'visible';
+      showControls();
+    }
+
+    function nextSlide() { if (current < slides.length - 1) { current++; renderSlide(current); } }
+    function prevSlide() { if (current > 0) { current--; renderSlide(current); } }
+
+    sideNext.addEventListener('click', nextSlide);
+    sidePrev.addEventListener('click', prevSlide);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+    });
+
+    renderSlide(current);
+  </script>
+</body>
+
+</html>
